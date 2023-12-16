@@ -7,24 +7,19 @@ import orishop.DAO.DBConnectionSQLServer;
 
 public class DBConnectionSQLServer {
 	
-	private final static String serverName = "LAPTOP-QN5NUQQB";
+	private final static String serverName = "34.87.119.19";
 	private final static String dbName = "CosmeticStore";
 	private final static String portNumber = "1433";
-	private final static String instance = "";// MSSQLSERVER LEAVE THIS ONE EMPTY IF YOUR SQL IS A SINGLE INSTANCE
-	private final static String userID = "";
-	private final static String password = "";
+	private final static String instance = "";// MSSQLSERVER LEAVE THIS ONE
+	private final static String userID = "sqlserver";
+	private final static String password = "123";
 	
-	//Kết nối SQL Server với Windows Authentication
 	public static Connection getConnectionW() throws Exception {
-		String url = "jdbc:sqlserver://" + serverName + "\\" + instance + ";integratedSecurity=true;databaseName=" +
-		dbName;
+		String url = "jdbc:sqlserver://" + serverName + ":" + portNumber + "\\" + instance + ";databaseName=" + dbName+";encrypt=true" + ";trustServerCertificate=true";
 		if (instance == null || instance.trim().isEmpty())
-		url = "jdbc:sqlserver://" + serverName +
-		";integratedSecurity=true;databaseName=" + dbName;
-		//DriverManager.registerDriver(new com.microsoft.sqlserver.jdbc.SQLServerDriver());
+			url = "jdbc:sqlserver://" + serverName + ":" + portNumber + ";databaseName=" + dbName +";encrypt=true" + ";trustServerCertificate=true";
 		Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-		return DriverManager.getConnection(url);
-	}
+		return DriverManager.getConnection(url, userID, password);	}
 	
 	public static void main(String[] args) {
 		try {
