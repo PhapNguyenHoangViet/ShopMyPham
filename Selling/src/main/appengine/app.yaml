@@ -1,0 +1,15 @@
+runtime: java17
+instance_class: F2
+
+handlers:
+- url: /.*
+  script: this-field-will-be-ignored
+
+env_variables:
+  SQL_SERVER_DB_URL: jdbc:sqlserver://34.87.119.19:1433;databaseName=CosmeticStore
+  SQL_SERVER_USER: sqlserver
+  SQL_SERVER_PASSWORD: 123
+
+
+ports:
+- 8080
