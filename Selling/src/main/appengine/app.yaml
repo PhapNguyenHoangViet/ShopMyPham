@@ -1,15 +1,13 @@
-runtime: java17
+runtime: java11
 instance_class: F2
 
+
+entrypoint: 'java -cp "*" orishop.vn.jetty.Main Selling-1.0.war'
 handlers:
 - url: /.*
   script: this-field-will-be-ignored
 
 env_variables:
-  SQL_SERVER_DB_URL: jdbc:sqlserver://34.87.119.19:1433;databaseName=CosmeticStore
+  SQL_SERVER_DB_URL: jdbc:sqlserver://shopmypham-408215:asia-southeast1:cosmeticstore
   SQL_SERVER_USER: sqlserver
   SQL_SERVER_PASSWORD: 123
-
-
-ports:
-- 8080

@@ -24,7 +24,7 @@ public class DBConnectionSQLServer {
 	public static void main(String[] args) {
 		try {
 			new DBConnectionSQLServer();
-			System.out.println(DBConnectionSQLServer.getConnectionW());
+			System.out.println("ok");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

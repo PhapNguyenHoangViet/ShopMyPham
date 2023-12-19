@@ -7,22 +7,71 @@
 	<version>1.0</version>
 	<packaging>war</packaging>
 
+	<parent>
+		<groupId>com.google.cloud.samples</groupId>
+		<artifactId>shared-configuration</artifactId>
+		<version>1.2.0</version>
+	</parent>
+
 	<properties>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
+		<failOnMissingWebXml>false</failOnMissingWebXml>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<artifactId>libraries-bom</artifactId>
+				<groupId>com.google.cloud</groupId>
+				<scope>import</scope>
+				<type>pom</type>
+				<version>26.27.0</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<!-- API của servlet code jsp -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version> <!-- Sử dụng phiên bản thấp hơn để đảm bảo tương thích với Java 8 -->
+			<version>4.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-remote-api</artifactId>
+			<version>2.0.23</version><!-- Or later-->
+		</dependency>
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-testing</artifactId>
+			<version>2.0.23</version><!-- Or later-->
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-api-stubs</artifactId>
+			<version>2.0.23</version><!-- Or later-->
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-tools-sdk</artifactId>
+			<version>2.0.23</version><!-- Or later-->
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-api-1.0-sdk</artifactId>
+			<version>2.0.23</version><!-- or later-->
+		</dependency>
+
 		<!-- Kết nối SQL -->
-				<dependency>
+		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>mssql-jdbc</artifactId>
 			<version>12.4.1.jre11</version>
@@ -46,7 +95,8 @@
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
 			<artifactId>javax.servlet.jsp-api</artifactId>
-			<version>2.3.1</version> <!-- Sử dụng phiên bản thấp hơn để đảm bảo tương thích với Java 8 -->
+			<version>2.3.1</version> <!-- Sử dụng phiên bản thấp hơn để đảm bảo
+			tương thích với Java 8 -->
 			<scope>provided</scope>
 		</dependency>
 
@@ -61,7 +111,8 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.4</version> <!-- Sử dụng phiên bản thấp hơn để đảm bảo tương thích với Java 8 -->
+			<version>2.4</version> <!-- Sử dụng phiên bản thấp hơn để đảm bảo
+			tương thích với Java 8 -->
 		</dependency>
 
 		<!-- Log4j -->
@@ -89,35 +140,97 @@
 			<artifactId>maven-plugin-api</artifactId>
 			<version>3.6.3</version>
 		</dependency>
+
 	</dependencies>
 
+
 	<build>
+
+		<outputDirectory>
+			${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
 		<plugins>
+			<!--
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.11.0</version> <!-- Cập nhật phiên bản để đảm bảo tương thích với Java 8 -->
-				<configuration>
-					<source>11</source>
-					<target>11</target>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>3.2.3</version> <!-- Cập nhật phiên bản để đảm bảo tương thích với Java 8 -->
+				<version>3.4.0</version> 
+				<executions>
+					<execution>
+						<id>default-war</id>
+						<phase>package</phase>
+						<goals>
+							<goal>war</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
-
+			-->
+			
+			<plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <archiveClasses>true</archiveClasses>
+                    <webResources>
+                        <!-- in order to interpolate version from pom into appengine-web.xml -->
+                        <resource>
+                            <directory>${basedir}/src/main/webapp/WEB-INF</directory>
+                            <filtering>true</filtering>
+                            <targetPath>WEB-INF</targetPath>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
 			<plugin>
 				<groupId>com.google.cloud.tools</groupId>
 				<artifactId>appengine-maven-plugin</artifactId>
-				<version>2.3.0</version>
+				<version>2.5.1</version>
+			</plugin>
+			
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>appengine-maven-plugin</artifactId>
+				<version>2.4.4</version>
 				<configuration>
 					<projectId>shopmypham-408215</projectId>
 					<version>GCLOUD_CONFIG</version>
-					<promote>true</promote>
+					<gcloudMode>beta</gcloudMode>
+					<deploy.promote>true</deploy.promote>
+					<deploy.stopPreviousVersion>true</deploy.stopPreviousVersion>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.11.0</version>
+				<configuration>
+					<annotationProcessorPaths>
+						<annotationProcessorPath>
+							<groupId>com.google.auto.value</groupId>
+							<artifactId>auto-value</artifactId>
+							<version>1.10.4</version>
+						</annotationProcessorPath>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.6.1</version>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>
+								${project.build.directory}/appengine-staging
+							</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
