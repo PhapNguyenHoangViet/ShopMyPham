@@ -156,7 +156,30 @@ public class UserCartController extends HttpServlet {
 	private void listCartItemByPage(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		String url = req.getRequestURI().toString();
+		HttpSession session1 = req.getSession();
+		String username1 = StaticVariables.username;
 		req.setAttribute("username", StaticVariables.username);
+		AccountModels user1 = accountService.findOne(username1);
+		if (user1 != null) {
+			CustomerModels cus = cusService.findCustomerByAccountID(user1.getAccountID());
+			StaticVariables.customer = cus;
+			req.setAttribute("customer", cus);
+			
+			
+			CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
+			StaticVariables.cartID = cart1.getCartId();
+			StaticVariables.customerID = cus.getCustomerId();
+
+			req.setAttribute("accountID", user1.getAccountID());
+			req.setAttribute("customerID", cus.getCustomerId());
+
+			req.setAttribute("cartID", cart1.getCartId());
+
+			int countCartItem = cartItemService.countCartItem(cart1.getCartId());
+			StaticVariables.countCartItem = countCartItem;
+			session1.setAttribute("countCartItem", countCartItem);
+			req.setAttribute("countCartItem", (int) session1.getAttribute("countCartItem"));
+		}
 
 		if (url.contains("user/findCartByCartID")) {
 			req.setCharacterEncoding("UTF-8");

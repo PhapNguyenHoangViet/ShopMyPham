@@ -316,6 +316,7 @@ public class UserProductController extends HttpServlet {
 		
 		session = req.getSession(true);
 		session.setAttribute("productID", pro.getProductId());
+		StaticVariables.productID =pro.getProductId();
 		req.getRequestDispatcher("/views/user/product/detailproduct.jsp").forward(req, resp);
 	}
 	
