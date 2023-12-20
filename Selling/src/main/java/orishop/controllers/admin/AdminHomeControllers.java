@@ -101,12 +101,6 @@ public class AdminHomeControllers extends HttpServlet {
 		long totalearning = orderService.totalPriceProductSell();
 		int orderrequest = orderService.countOrderRequest();
 		
-		//ObjectMapper objectMapper = new ObjectMapper();
-		Object[] revenue = orderService.thongke(2023);
-		//String revenueJSON = objectMapper.writeValueAsString(revenue);
-		//revenueJSON = URLEncoder.encode(revenueJSON, "UTF-8");
-		//
-		//req.setAttribute("revenueJSON", revenueJSON);
 		req.setAttribute("earningmonthly", earningmonthly);
 		req.setAttribute("earningannual", earningannual);
 		req.setAttribute("totalearning", totalearning);

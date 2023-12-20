@@ -22,6 +22,7 @@ import orishop.services.ICartService;
 import orishop.services.ICustomerService;
 import orishop.services.IOrderService;
 import orishop.services.OrderServiceImpl;
+import orishop.util.StaticVariables;
 @WebServlet(urlPatterns = { "/user/payment","/user/updateorder"})
 
 public class UserOrderController extends HttpServlet  {
@@ -39,7 +40,7 @@ private static final long serialVersionUID = 1L;
 		float deliveryFee = 0;
 		int choose = 0;
 		HttpSession session = req.getSession();
-		int cartID = (int) session.getAttribute("cartID");
+		int cartID = StaticVariables.cartID;
 		List<CartItemModels> listCartItem = (List<CartItemModels>) session.getAttribute("listCartItem");
 		
 		
@@ -62,8 +63,8 @@ private static final long serialVersionUID = 1L;
 				deliveryFee = (float) 20000.0;
 			}
 			
-			int customerId = (int)session.getAttribute("customerID");
-			float totalPriceCart = (float)session.getAttribute("totalPriceCart");
+			int customerId = StaticVariables.cartID;
+			float totalPriceCart = StaticVariables.totalPriceOrder;
 			float totalPriceOrder = totalPriceCart + deliveryFee;
 			session.setAttribute("totalPriceOrder", totalPriceOrder);
 			
@@ -78,7 +79,6 @@ private static final long serialVersionUID = 1L;
 			flag = 0;
 			session.setAttribute("flag", flag);
 			}
-			
 			
 			RequestDispatcher rd = req.getRequestDispatcher("/views/user/inforuser_cart/detailcart.jsp");
 			rd.forward(req, resp);
@@ -96,7 +96,7 @@ private static final long serialVersionUID = 1L;
 		resp.setCharacterEncoding("UTF-8");
 
 		HttpSession session = req.getSession();
-		float totalPriceOrder = (float) session.getAttribute("totalPriceOrder");
+		float totalPriceOrder = StaticVariables.totalPriceOrder;;
 		String deliveryMethod = (String) session.getAttribute("deliveryMethod");
 		String paymentStatus = "Unpaid";
 		orderService.updateOrder(totalPriceOrder, deliveryMethod, paymentStatus);

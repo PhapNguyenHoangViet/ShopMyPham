@@ -75,7 +75,7 @@
 			</div>
 		</form>
 
-		<c:if test="${sessionScope.account == null}">
+		<c:if test="${username == null}">
 			<a style="border: 0px; background: transparent;"
 				href="${pageContext.request.contextPath}/web/login">Login</a>
 		</c:if>
@@ -103,7 +103,7 @@
 							<h6>${customer.customerName}</h6>
 						</li>
 						<li><a class="dropdown-item d-flex align-items-center"
-							href="editInfor"> <i class="bi bi-person"></i> <span>My
+							href="editInfor?username=${username}"><i class="bi bi-person"></i> <span>My
 									Profile</span>
 						</a></li>
 						<li><a class="dropdown-item d-flex align-items-center"

@@ -17,6 +17,7 @@ import orishop.services.AccountServiceImpl;
 import orishop.services.IAccountService;
 import orishop.util.Constant;
 import orishop.util.Email;
+import orishop.util.StaticVariables;
 
 @WebServlet(urlPatterns = { "/web/login", "/web/register", "/web/forgotpass", "/web/waiting", "/web/VerifyCode",
 		"/web/logout" })
@@ -43,13 +44,17 @@ public class WebHomeControllers extends HttpServlet {
 		} else if (url.contains("web/logout")) {
 			getLogout(req, resp);
 		}
-
 	}
+	
+	
 
 	private void getLogout(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession();
 		session.removeAttribute("account");
-
+		StaticVariables.account = null;
+		StaticVariables.username = null;
+		StaticVariables.cartID = 0;
+		
 		Cookie[] cookies = req.getCookies();
 
 		if (cookies != null) {
@@ -139,11 +144,9 @@ public class WebHomeControllers extends HttpServlet {
 		// check session
 		HttpSession session = req.getSession(false);
 		if (session != null && session.getAttribute("account") != null) {
-			AccountModels account = (AccountModels)session.getAttribute("account");
-			resp.sendRedirect(req.getContextPath() + "/web/waiting?username="+account.getUsername());
+			resp.sendRedirect(req.getContextPath() + "/web/waiting");
 			return;
 		}
-		
 
 		req.getRequestDispatcher("/views/web/login.jsp").forward(req, resp);
 	}
@@ -175,12 +178,16 @@ public class WebHomeControllers extends HttpServlet {
 				// tạo session
 				HttpSession session = req.getSession(true);
 				session.setAttribute("account", user);
-
+				StaticVariables.account = user;
+				StaticVariables.username = username;
+				
 				if (isRememberMe) {
 					saveRememberMe(resp, username);
 				}
+				StaticVariables.username = username;
+				req.setAttribute("username", username);
 
-				resp.sendRedirect(req.getContextPath() + "/web/waiting?username="+username);
+				resp.sendRedirect(req.getContextPath() + "/web/waiting");
 
 			} else {
 				alertMsg = "Tài khoản đã bị khóa, liên hệ  Admin nhé";
@@ -197,20 +204,21 @@ public class WebHomeControllers extends HttpServlet {
 	}
 
 	private void getWaiting(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-		String username = req.getParameter("username");
-		
-			AccountModels u = accountService.findOne(username);
-			req.setAttribute("username", username);
+		AccountModels u = StaticVariables.account;
+		if (u != null) {
+			req.setAttribute("username", u.getUsername());
 			if (u.getRoleID() == 1) {
-				resp.sendRedirect(req.getContextPath() + "/user/home?username="+username);
+				resp.sendRedirect(req.getContextPath() + "/user/home");
 			} else if (u.getRoleID() == 2) {
-				resp.sendRedirect(req.getContextPath() + "/admin/home?username="+username);
+				resp.sendRedirect(req.getContextPath() + "/admin/home");
 			} else if (u.getRoleID() == 3) {
-				resp.sendRedirect(req.getContextPath() + "/seller/home?username="+username);
+				resp.sendRedirect(req.getContextPath() + "/seller/home");
 			} else if (u.getRoleID() == 4) {
-				resp.sendRedirect(req.getContextPath() + "/shipper/home?username="+username);
+				resp.sendRedirect(req.getContextPath() + "/shipper/home");
 			}
+		} else {
+			resp.sendRedirect(req.getContextPath() + "/web/login");
+		}
 	}
 
 	private void postRegister(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

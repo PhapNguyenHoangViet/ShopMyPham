@@ -19,7 +19,6 @@
 			<td>${accountID}</td>
 			<td>${customerID}</td>
 			<td>${cartID}</td>
-
 		</tr>
 
 	</table>

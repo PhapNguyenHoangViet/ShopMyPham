@@ -62,7 +62,7 @@ public class AccountServiceImpl implements IAccountService{
 			return false;
 		if (userDAO.checkExistUsername(username))
 			return false;
-		userDAO.insertregister(new AccountModels(username,password, mail, 1, 0, code));
+		userDAO.insertregister(new AccountModels(username,password, mail, 1, 1, code));
 		return true;
 	}
 

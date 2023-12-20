@@ -33,8 +33,9 @@ import orishop.services.IEmployeeService;
 import orishop.services.IProductService;
 import orishop.services.IRatingService;
 import orishop.services.ProductServiceImp;
+import orishop.util.StaticVariables;
 
-@WebServlet(urlPatterns = {"/user/home", "/user/editInfor", "/user/updateuser"})
+@WebServlet(urlPatterns = { "/user/home", "/user/editInfor", "/user/updateuser" })
 
 public class UserHomeControllers extends HttpServlet {
 	ICategoryService cateService = new CategoryServiceImp();
@@ -44,15 +45,18 @@ public class UserHomeControllers extends HttpServlet {
 	ICartItemService cartItemService = new CartItemServiceImpl();
 	IProductService productService = new ProductServiceImp();
 	ICategoryService categoryService = new CategoryServiceImp();
-	
+
 	IAccountService accountService = new AccountServiceImpl();
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
+	String username = StaticVariables.username;
+	AccountModels user = accountService.findOne(username);
+
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String url = req.getRequestURI();
-		if(url.contains("user/home")) {		
+		if (url.contains("user/home")) {
 			getHome(req, resp);
 		} else if (url.contains("user/editInfor")) {
 			List<CustomerModels> listcustomer = cusService.findAll();
@@ -61,32 +65,34 @@ public class UserHomeControllers extends HttpServlet {
 			rd.forward(req, resp);
 		}
 	}
+
 	private void getHome(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		String username = req.getParameter("username");
-		AccountModels user = accountService.findOne(username);
 		HttpSession session = req.getSession();
 		req.setAttribute("username", username);
-		if (user != null) {
-			CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
-			CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
+		req.setAttribute("username", user.getUsername());
 
-			req.setAttribute("username", user.getUsername());
-			req.setAttribute("accountID", user.getAccountID());
-			req.setAttribute("customerID", cus.getCustomerId());
-			session.setAttribute("customer", cus);
-			session.setAttribute("customerID", cus.getCustomerId());
-			session = req.getSession(true);
-			session.setAttribute("cartID", cart1.getCartId());
-			req.setAttribute("cartID", cart1.getCartId());
+		CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
+		StaticVariables.customer = cus;
+		req.setAttribute("customer", cus);
+		
+		
+		CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
+		StaticVariables.cartID = cart1.getCartId();
+		StaticVariables.customerID = cus.getCustomerId();
 
-			int countCartItem = cartItemService.countCartItem((int)session.getAttribute("cartID"));
-			session.setAttribute("countCartItem", countCartItem);
-			req.setAttribute("countCartItem", (int)session.getAttribute("countCartItem"));
-		}
+		req.setAttribute("accountID", user.getAccountID());
+		req.setAttribute("customerID", cus.getCustomerId());
+
+		req.setAttribute("cartID", cart1.getCartId());
+
+		int countCartItem = cartItemService.countCartItem((int) session.getAttribute("cartID"));
+		session.setAttribute("countCartItem", countCartItem);
+		req.setAttribute("countCartItem", (int) session.getAttribute("countCartItem"));
+
 		List<ProductModels> listProduct = productService.findTopProduct(9);
 		List<ProductModels> listProductSale = productService.findTopSaleProduct(3);
 		List<CategoryModels> listCate = categoryService.findAllCategory();
-		
+
 		req.setAttribute("list", listProduct);
 		req.setAttribute("listS", listProductSale);
 		req.setAttribute("listC", listCate);
@@ -94,8 +100,9 @@ public class UserHomeControllers extends HttpServlet {
 		req.getRequestDispatcher("/views/user/product/home.jsp").forward(req, resp);
 
 	}
+
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String url = req.getRequestURI().toString();
 		if (url.contains("editInfor")) {
 			editInfor(req, resp);
@@ -103,41 +110,44 @@ public class UserHomeControllers extends HttpServlet {
 			postUpdateUser(req, resp);
 		}
 	}
+
 	private void editInfor(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		req.setCharacterEncoding("UTF-8");
 		resp.setCharacterEncoding("UTF-8");
 
-
+		req.setAttribute("username", username);
 		CustomerModels model = new CustomerModels();
 		try {
 			// lay du lieu tu jsp bang beanutils
 			BeanUtils.populate(model, req.getParameterMap());
 
-			//model.setCategory(catService.findOne(model.getCategoryID())); 
+			// model.setCategory(catService.findOne(model.getCategoryID()));
 			cusService.editInfor(model);
-			//thông báo kết quả
+			// thông báo kết quả
 			req.setAttribute("customer", model);
-			req.setAttribute("message","Edit successful");
+			req.setAttribute("message", "Edit successful");
 		} catch (Exception e) {
 			e.printStackTrace();
-			req.setAttribute("error","Edit fails");
+			req.setAttribute("error", "Edit fails");
 		}
-		resp.sendRedirect(req.getContextPath() + "/listcustomer");	
+		resp.sendRedirect(req.getContextPath() + "/listcustomer");
 	}
-		
+
 	private void postUpdateUser(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
 		req.setCharacterEncoding("UTF-8");
 		resp.setCharacterEncoding("UTF-8");
 
+		req.setAttribute("username", username);
 		HttpSession session = req.getSession();
+
 		CustomerModels model = (CustomerModels) session.getAttribute("customer");
 		try {
 			// lay du lieu tu jsp bang beanutils
 			BeanUtils.populate(model, req.getParameterMap());
 
-			//model.setCategory(catService.findOne(model.getCategoryID())); 
+			// model.setCategory(catService.findOne(model.getCategoryID()));
 			cusService.editInfor(model);
-			//thông báo kết quả
+			// thông báo kết quả
 			session.setAttribute("customer", model);
 		} catch (Exception e) {
 			e.printStackTrace();

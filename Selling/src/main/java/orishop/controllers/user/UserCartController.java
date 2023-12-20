@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import orishop.models.*;
 import orishop.services.*;
+import orishop.util.StaticVariables;
 
 @WebServlet(urlPatterns = { "/user/product/insertCartItem", "/user/findCartByCartID", "/user/findCartItem",
 		"/user/insertCartItem", "/user/updateCartItem", "/user/deleteCartItem", "/user/countCartItem", "/user/insertorder", "/user/mypurchase"})
@@ -29,6 +30,7 @@ public class UserCartController extends HttpServlet {
 	IProductService productService = new ProductServiceImp();
 	ICategoryService categoryService = new CategoryServiceImp();
 	IAccountService accountService = new AccountServiceImpl();
+	
 	
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
@@ -59,6 +61,7 @@ public class UserCartController extends HttpServlet {
 	}
 
 	private void updateCartItem(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		req.setAttribute("username", StaticVariables.username);
 		req.setCharacterEncoding("UTF-8");
 		resp.setCharacterEncoding("UTF-8");
 
@@ -79,12 +82,12 @@ public class UserCartController extends HttpServlet {
 	}
 
 	private void insertCartItem(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		req.setAttribute("username", StaticVariables.username);
 		req.setCharacterEncoding("UTF-8");
 		resp.setCharacterEncoding("UTF-8");
 
-		HttpSession session = req.getSession();
-		int cartId = ((int) session.getAttribute("cartID"));
-		int productId = ((int) session.getAttribute("productID"));
+		int cartId = StaticVariables.cartID;
+		int productId = StaticVariables.productID;
 		int quantity = Integer.parseInt(req.getParameter("quantity"));
 
 		CartItemModels model = cartItemService.findCartItemByProductID(cartId, productId);
@@ -107,20 +110,24 @@ public class UserCartController extends HttpServlet {
 	private void listCartItemByPage(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		String url = req.getRequestURI().toString();
+		req.setAttribute("username", StaticVariables.username);
 
 		if (url.contains("user/findCartByCartID")) {
+			req.setAttribute("username", StaticVariables.username);
 			req.setCharacterEncoding("UTF-8");
 			resp.setCharacterEncoding("UTF-8");
 
-			
-			int cartId = Integer.parseInt(req.getParameter("cartID"));
-			String username = req.getParameter("username");
+			StaticVariables.cartID = Integer.parseInt(req.getParameter("cartID"));
+
+			String username = StaticVariables.username;
 			AccountModels user = accountService.findOne(username);
 			
 			HttpSession session = req.getSession();
 			session.setAttribute("account",user);
 			if (user != null) {
 				CustomerModels cus = customerSerivce.findCustomerByAccountID(user.getAccountID());
+				
+				
 				CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
 
 				req.setAttribute("username", user.getUsername());
@@ -170,10 +177,10 @@ public class UserCartController extends HttpServlet {
 	}
 	private void deleteCartItemByPage(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException 
 	{
+		req.setAttribute("username", StaticVariables.username);
 		req.setCharacterEncoding("UTF-8");
 		resp.setCharacterEncoding("UTF-8");
-		String username = req.getParameter("username");
-		AccountModels user = accountService.findOne(username);
+
 		int cartId = Integer.parseInt(req.getParameter("cartID"));
 		int productId = Integer.parseInt(req.getParameter("productID"));
 
@@ -181,18 +188,20 @@ public class UserCartController extends HttpServlet {
 
 		req.setAttribute("message", "Đã xóa thành công");
 
-		resp.sendRedirect(req.getContextPath() + "/user/findCartByCartID??cartID="+cartId+"&username="+username);
+		resp.sendRedirect(req.getContextPath() + "/user/findCartByCartID");
 	}
 	
 	private void insertOrder(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		req.setAttribute("username", StaticVariables.username);
 		req.setCharacterEncoding("UTF-8");
 		resp.setCharacterEncoding("UTF-8");
 
-		HttpSession session = req.getSession();
+
 		OrdersModels model = new OrdersModels();
-		int customerId = (int) session.getAttribute("customerID");
-		float totalPriceOrder = (float) session.getAttribute("totalPriceCart");
-		int cartID = (int) session.getAttribute("cartID");
+		int customerId = StaticVariables.customerID;
+		float totalPriceOrder = StaticVariables.totalPriceOrder;
+		int cartID = StaticVariables.cartID;
+		
 		List<CartItemModels> listCartItem = cartItemService.findCartItemByCartID(cartID);
 
 		orderService.createOrder(model, customerId, totalPriceOrder, listCartItem);
@@ -200,17 +209,17 @@ public class UserCartController extends HttpServlet {
 	
 	private void deleteAllCartItem(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		req.setAttribute("username", StaticVariables.username);
 		req.setCharacterEncoding("UTF-8");
 		resp.setCharacterEncoding("UTF-8");
-		HttpSession session = req.getSession();
-		int cartID = (int) session.getAttribute("cartID");
+		int cartID = StaticVariables.cartID;
 
 		cartItemService.deleteAllCartItem(cartID);
 	}
 	
 	private void getMyPurchase(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-		HttpSession session = req.getSession();
-		AccountModels user = (AccountModels) session.getAttribute("account");
+		req.setAttribute("username", StaticVariables.username);
+		AccountModels user = StaticVariables.account;
 		if (user != null) {
 			CustomerModels cus = customerSerivce.findCustomerByAccountID(user.getAccountID());
 			List<OrdersModels> listOrder = orderService.findAllOrderByUser(cus.getCustomerId());

@@ -18,11 +18,14 @@ import orishop.models.CategoryModels;
 import orishop.models.CustomerModels;
 import orishop.models.ProductModels;
 import orishop.models.RatingModels;
+import orishop.services.AccountServiceImpl;
 import orishop.services.CategoryServiceImp;
+import orishop.services.IAccountService;
 import orishop.services.ICategoryService;
 import orishop.services.IProductService;
 import orishop.services.IRatingService;
 import orishop.services.ProductServiceImp;
+import orishop.util.StaticVariables;
 
 
 @WebServlet(urlPatterns = {"/user/product/listProduct", "/user/product/productByCategory", "/user/product/detailProduct", 
@@ -36,6 +39,11 @@ public class UserProductController extends HttpServlet {
 
 	IProductService productService = new ProductServiceImp();
 	ICategoryService categoryService = new CategoryServiceImp();
+	IAccountService accountService = new AccountServiceImpl();
+	
+	String username = StaticVariables.username;
+	AccountModels user = accountService.findOne(username);
+	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String url = req.getRequestURI().toString();
@@ -89,6 +97,9 @@ public class UserProductController extends HttpServlet {
 	}
 
 	private void postSearchProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		req.setAttribute("username", username);
+		
+		
 		String proName = req.getParameter("searchProduct");
 		List<ProductModels> listProduct = productService.findProduct(proName);
 		
@@ -122,6 +133,8 @@ public class UserProductController extends HttpServlet {
 	}
 
 	private void getTopProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		req.setAttribute("username", username);
+		
 		List<ProductModels> listProduct = productService.findTopProduct(10);
 		int pagesize = 10;
 		int size = listProduct.size();
@@ -154,6 +167,8 @@ public class UserProductController extends HttpServlet {
 	}
 
 	private void getFilterAsc(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		req.setAttribute("username", username);
+		
 		List<ProductModels> listProduct = productService.filterProductAscByPrice();
 		int pagesize = 10;
 		int size = listProduct.size();
@@ -186,6 +201,8 @@ public class UserProductController extends HttpServlet {
 	}
 	
 	private void getDetailProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		req.setAttribute("username", username);
+		
 		int pid = Integer.parseInt(req.getParameter("pid"));
 		ProductModels pro = productService.findOne(pid);
 		req.setAttribute("p", pro);
@@ -198,6 +215,8 @@ public class UserProductController extends HttpServlet {
 	
 
 	private void getProductByCategory(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		req.setAttribute("username", username);
+		
 		int id = Integer.parseInt(req.getParameter("cid"));
 		
 		List<ProductModels> listProduct = productService.findByCategory(id);
@@ -233,6 +252,8 @@ public class UserProductController extends HttpServlet {
 	}
 
 	private void getFilterDesc(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+		req.setAttribute("username", username);
+		
 		List<ProductModels> listProduct = productService.filterProductDescByPrice();
 		int pagesize = 10;
 		int size = listProduct.size();
@@ -272,6 +293,8 @@ public class UserProductController extends HttpServlet {
 //	}
 
 	private void getDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		req.setAttribute("username", username);
+		
 		int id = Integer.parseInt(req.getParameter("pid"));
 		ProductModels product = productService.findOne(id);
 		productService.deleteProduct(product);
@@ -280,6 +303,8 @@ public class UserProductController extends HttpServlet {
 	}
 
 	private void doPost_Insert(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		req.setAttribute("username", username);
+		
 		ProductModels product = new ProductModels();
 
 		try {
@@ -299,6 +324,8 @@ public class UserProductController extends HttpServlet {
 
 	private void doPost_Update(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
+		req.setAttribute("username", username);
+		
 		ProductModels product = new ProductModels();
 
 		try {
@@ -318,6 +345,7 @@ public class UserProductController extends HttpServlet {
 
 	// Chưa check
 	private void getUpdate(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		req.setAttribute("username", username);
 		int id = Integer.parseInt(req.getParameter("pid"));
 		ProductModels product = productService.findOne(id);
 
@@ -330,6 +358,8 @@ public class UserProductController extends HttpServlet {
 
 	private void getListProduct(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		req.setAttribute("username", username);
+		
 		List<ProductModels> listProduct = productService.findAllProduct();
 		int pagesize = 10;
 		int size = listProduct.size();
