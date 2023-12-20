@@ -18,11 +18,13 @@ import orishop.models.CartModels;
 import orishop.models.CategoryModels;
 import orishop.models.CustomerModels;
 import orishop.models.ProductModels;
+import orishop.services.AccountServiceImpl;
 import orishop.services.CartItemServiceImpl;
 import orishop.services.CartServiceImpl;
 import orishop.services.CategoryServiceImp;
 import orishop.services.CustomerServiceImp;
 import orishop.services.EmployeeServiceImp;
+import orishop.services.IAccountService;
 import orishop.services.ICartItemService;
 import orishop.services.ICartService;
 import orishop.services.ICategoryService;
@@ -31,7 +33,6 @@ import orishop.services.IEmployeeService;
 import orishop.services.IProductService;
 import orishop.services.IRatingService;
 import orishop.services.ProductServiceImp;
-import orishop.services.RatingServiceImpl;
 
 @WebServlet(urlPatterns = {"/user/home", "/user/editInfor", "/user/updateuser"})
 
@@ -43,7 +44,8 @@ public class UserHomeControllers extends HttpServlet {
 	ICartItemService cartItemService = new CartItemServiceImpl();
 	IProductService productService = new ProductServiceImp();
 	ICategoryService categoryService = new CategoryServiceImp();
-	IRatingService ratingService = new RatingServiceImpl();
+	
+	IAccountService accountService = new AccountServiceImpl();
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -60,9 +62,10 @@ public class UserHomeControllers extends HttpServlet {
 		}
 	}
 	private void getHome(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String username = req.getParameter("username");
+		AccountModels user = accountService.findOne(username);
 		HttpSession session = req.getSession();
-		AccountModels user = (AccountModels) session.getAttribute("account");
-		session.setAttribute("ratingService", ratingService);
+		req.setAttribute("username", username);
 		if (user != null) {
 			CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
 			CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
@@ -74,7 +77,7 @@ public class UserHomeControllers extends HttpServlet {
 			session.setAttribute("customerID", cus.getCustomerId());
 			session = req.getSession(true);
 			session.setAttribute("cartID", cart1.getCartId());
-			req.setAttribute("cartID", (int)session.getAttribute("cartID"));
+			req.setAttribute("cartID", cart1.getCartId());
 
 			int countCartItem = cartItemService.countCartItem((int)session.getAttribute("cartID"));
 			session.setAttribute("countCartItem", countCartItem);

@@ -47,7 +47,7 @@
 			<div class="d-flex flex-column align-items-end">
 				<div class="mt-auto">
 					<a class="dropdown-item d-flex align-items-center"
-							href="/Selling/web/logout">Đăng xuất</a>
+							href="${pageContext.request.contextPath}/web/logout">Đăng xuất</a>
 				</div>
 			</div>
 		</div>

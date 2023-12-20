@@ -111,7 +111,7 @@
 												</div>
 												<div class="col-md-1 col-lg-1 col-xl-1 text-end">
 													<a
-														href="<c:url value='/user/deleteCartItem?cartID=${cartID}&productID=${i.productID}'/>"
+														href="<c:url value='/user/deleteCartItem?cartID=${cartID}&productID=${i.productID}&username=${username}'/>"
 														class="text-danger"> <i class="fas fa-trash fa-lg"></i>
 													</a>
 												</div>

@@ -82,22 +82,15 @@ public class WebHomeControllers extends HttpServlet {
 		resp.setContentType("text/html; charset=UTF-8");
 		try (PrintWriter out = resp.getWriter()) {
 
-			// truy cập session
-			HttpSession session = req.getSession();
-			AccountModels user = (AccountModels) session.getAttribute("account");
-			String code = req.getParameter("authcode");
+			String username = req.getParameter("username");
+			AccountModels user = accountService.findOne(username);
 
-			if (code.equals(user.getCode())) {
-				user.setMail(user.getMail());
-				user.setStatus(1);
+			user.setMail(user.getMail());
+			user.setStatus(1);
 
-				accountService.updatestatus(user);
-				req.setAttribute("message", "Kích hoạt tài khoản thành công!");
-				req.getRequestDispatcher("/views/web/login.jsp").forward(req, resp);
-			} else {
-				req.setAttribute("error", "Sai mã kích hoạt, vui lòng kiểm tra lại!!!");
-				req.getRequestDispatcher("/views/web/verify.jsp").forward(req, resp);
-			}
+			accountService.updatestatus(user);
+			req.setAttribute("message", "Kích hoạt tài khoản thành công!");
+			req.getRequestDispatcher("/views/web/login.jsp").forward(req, resp);
 		} catch (Exception e) {
 			e.getStackTrace();
 		}
@@ -146,21 +139,11 @@ public class WebHomeControllers extends HttpServlet {
 		// check session
 		HttpSession session = req.getSession(false);
 		if (session != null && session.getAttribute("account") != null) {
-			resp.sendRedirect(req.getContextPath() + "/web/waiting");
+			AccountModels account = (AccountModels)session.getAttribute("account");
+			resp.sendRedirect(req.getContextPath() + "/web/waiting?username="+account.getUsername());
 			return;
 		}
-		// check cookie
-		Cookie[] cookies = req.getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals("username")) {
-					session = req.getSession(true);
-					session.setAttribute("username", cookie.getValue());
-					resp.sendRedirect(req.getContextPath() + "/waiting");
-					return;
-				}
-			}
-		}
+		
 
 		req.getRequestDispatcher("/views/web/login.jsp").forward(req, resp);
 	}
@@ -197,7 +180,7 @@ public class WebHomeControllers extends HttpServlet {
 					saveRememberMe(resp, username);
 				}
 
-				resp.sendRedirect(req.getContextPath() + "/web/waiting");
+				resp.sendRedirect(req.getContextPath() + "/web/waiting?username="+username);
 
 			} else {
 				alertMsg = "Tài khoản đã bị khóa, liên hệ  Admin nhé";
@@ -215,23 +198,19 @@ public class WebHomeControllers extends HttpServlet {
 
 	private void getWaiting(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-		// kiem tra session
-		HttpSession session = req.getSession();
-		if (session != null && session.getAttribute("account") != null) {
-			AccountModels u = (AccountModels) session.getAttribute("account");
-			req.setAttribute("username", u.getUsername());
+		String username = req.getParameter("username");
+		
+			AccountModels u = accountService.findOne(username);
+			req.setAttribute("username", username);
 			if (u.getRoleID() == 1) {
-				resp.sendRedirect(req.getContextPath() + "/user/home");
+				resp.sendRedirect(req.getContextPath() + "/user/home?username="+username);
 			} else if (u.getRoleID() == 2) {
-				resp.sendRedirect(req.getContextPath() + "/admin/home");
+				resp.sendRedirect(req.getContextPath() + "/admin/home?username="+username);
 			} else if (u.getRoleID() == 3) {
-				resp.sendRedirect(req.getContextPath() + "/seller/home");
+				resp.sendRedirect(req.getContextPath() + "/seller/home?username="+username);
 			} else if (u.getRoleID() == 4) {
-				resp.sendRedirect(req.getContextPath() + "/shipper/home");
+				resp.sendRedirect(req.getContextPath() + "/shipper/home?username="+username);
 			}
-		} else {
-			resp.sendRedirect(req.getContextPath() + "/web/login");
-		}
 	}
 
 	private void postRegister(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -267,7 +246,7 @@ public class WebHomeControllers extends HttpServlet {
 					boolean isSuccess = accountService.register(username, password, email, code);
 
 					if (isSuccess) {
-						resp.sendRedirect(req.getContextPath() + "/web/VerifyCode");
+						resp.sendRedirect(req.getContextPath() + "/web/VerifyCode?username="+username);
 
 					} else {
 						alertMsg = "Lỗi hệ thống!";

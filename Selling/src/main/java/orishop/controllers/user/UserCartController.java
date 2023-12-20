@@ -28,6 +28,7 @@ public class UserCartController extends HttpServlet {
 
 	IProductService productService = new ProductServiceImp();
 	ICategoryService categoryService = new CategoryServiceImp();
+	IAccountService accountService = new AccountServiceImpl();
 	
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
@@ -111,8 +112,13 @@ public class UserCartController extends HttpServlet {
 			req.setCharacterEncoding("UTF-8");
 			resp.setCharacterEncoding("UTF-8");
 
+			
+			int cartId = Integer.parseInt(req.getParameter("cartID"));
+			String username = req.getParameter("username");
+			AccountModels user = accountService.findOne(username);
+			
 			HttpSession session = req.getSession();
-			AccountModels user = (AccountModels) session.getAttribute("account");
+			session.setAttribute("account",user);
 			if (user != null) {
 				CustomerModels cus = customerSerivce.findCustomerByAccountID(user.getAccountID());
 				CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
@@ -128,7 +134,8 @@ public class UserCartController extends HttpServlet {
 				session.setAttribute("countCartItem", countCartItem);
 				req.setAttribute("countCartItem", (int) session.getAttribute("countCartItem"));
 			}
-
+			req.setAttribute("username", username);
+			
 			CartModels cart = cartService.findCartByCartID((int) session.getAttribute("cartID"));
 			req.setAttribute("cart", cart);
 			List<CartItemModels> listCartItem = cartItemService.findCartItemByCartID(cart.getCartId());
@@ -165,7 +172,8 @@ public class UserCartController extends HttpServlet {
 	{
 		req.setCharacterEncoding("UTF-8");
 		resp.setCharacterEncoding("UTF-8");
-
+		String username = req.getParameter("username");
+		AccountModels user = accountService.findOne(username);
 		int cartId = Integer.parseInt(req.getParameter("cartID"));
 		int productId = Integer.parseInt(req.getParameter("productID"));
 
@@ -173,7 +181,7 @@ public class UserCartController extends HttpServlet {
 
 		req.setAttribute("message", "Đã xóa thành công");
 
-		resp.sendRedirect(req.getContextPath() + "/user/findCartByCartID");
+		resp.sendRedirect(req.getContextPath() + "/user/findCartByCartID??cartID="+cartId+"&username="+username);
 	}
 	
 	private void insertOrder(HttpServletRequest req, HttpServletResponse resp) throws IOException {

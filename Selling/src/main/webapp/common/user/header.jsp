@@ -41,18 +41,18 @@
 			<div class="offcanvas-body">
 				<ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
 					<li class="nav-item"><a class="nav-link active"
-						aria-current="page" href="/Selling/user/home">Trang chủ</a></li>
+						aria-current="page" href="${pageContext.request.contextPath}user/home">Trang chủ</a></li>
 					<li class="nav-item"><a class="nav-link"
 						href="product/listProduct">Danh sách sản phẩm</a></li>
 					<li class="nav-item"><a class="nav-link" href="mypurchase">Đơn
 							hàng của tôi</a></li>
 					<li class="nav-item"><a class="nav-link"
-						href="/Selling/web/logout">Đăng xuất</a></li>
+						href="${pageContext.request.contextPath}/web/logout">Đăng xuất</a></li>
 				</ul>
 				<!-- </div> -->
 			</div>
 		</div>
-		<a href="/Selling/user/home"> <svg
+		<a href="${pageContext.request.contextPath}/user/home"> <svg
 				xmlns="http://www.w3.org/2000/svg" viewBox="0 0 139 31" height="40"
 				width="80" data-id="common" class="appshell-fp-16d8r2m">
             <path
@@ -61,7 +61,7 @@
         </svg>
 		</a>
 		<form class="d-flex" role="search"
-			action="/Selling/user/product/searchProduct" method="post">
+			action="${pageContext.request.contextPath}/user/product/searchProduct" method="post">
 			<div class="input-group">
 				<input class="form-control border-end-0 border" type="search"
 					placeholder="Search" id="example-search-input" name="searchProduct">
@@ -77,12 +77,12 @@
 
 		<c:if test="${sessionScope.account == null}">
 			<a style="border: 0px; background: transparent;"
-				href="/Selling/web/login">Login</a>
+				href="${pageContext.request.contextPath}/web/login">Login</a>
 		</c:if>
 
-		<c:if test="${sessionScope.account != null}">
+		<c:if test="${username != null}">
 			<div class="d-flex align-items-center">
-				<a href="<c:url value='/user/findCartByCartID?cartID=${cartID}'/>"
+				<a href="<c:url value='/user/findCartByCartID?cartID=${cartID}&username=${username}'/>"
 					style="text-decoration: none; color: black; transition: color 0.3s ease;"
 					onmouseover="this.style.color='blue'"
 					onmouseout="this.style.color='black'"> <i
@@ -107,7 +107,7 @@
 									Profile</span>
 						</a></li>
 						<li><a class="dropdown-item d-flex align-items-center"
-							href="/Selling/web/logout"> <i class="bi bi-box-arrow-right"></i>
+							href="${pageContext.request.contextPath}/web/logout"> <i class="bi bi-box-arrow-right"></i>
 								<span>Sign Out</span>
 						</a></li>
 

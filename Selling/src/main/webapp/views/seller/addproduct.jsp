@@ -106,7 +106,7 @@
 
     <script>
         function logout() {
-            window.location.href = "/Selling/seller/listproduct";
+            window.location.href = "${pageContext.request.contextPath}/seller/listproduct";
         }
     </script>
 

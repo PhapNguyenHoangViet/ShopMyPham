@@ -21,7 +21,7 @@ c<%@ page language="java" contentType="text/html; charset=UTF-8"
 	<nav aria-label="breadcrumb"
 		style="padding: 25px; padding-left: 100px; align-items: center;">
 		<ol class="breadcrumb">
-			<li class="breadcrumb-item"><a href="/Selling/user/home">Oriflame</a></li>
+			<li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/user/home">Oriflame</a></li>
 			<li class="breadcrumb-item"><a href="#">ListProduct</a></li>
 		</ol>
 	</nav>

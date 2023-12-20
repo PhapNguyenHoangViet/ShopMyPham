@@ -69,7 +69,7 @@
 					width="30" height="30" class="d-inline-block align-top" alt="">
 				Admin
 			</div>
-			<a class="ms-3" href="/Selling/web/logout">Đăng xuất</a>
+			<a class="ms-3" href="${pageContext.request.contextPath}/web/logout">Đăng xuất</a>
 		</div>
 	</nav>
 
