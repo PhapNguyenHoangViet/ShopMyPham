@@ -50,15 +50,36 @@ public class UserHomeControllers extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	String username = StaticVariables.username;
-	AccountModels user = accountService.findOne(username);
-
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String url = req.getRequestURI();
 		if (url.contains("user/home")) {
 			getHome(req, resp);
 		} else if (url.contains("user/editInfor")) {
+			HttpSession session = req.getSession();
+			String username = StaticVariables.username;
+			req.setAttribute("username", StaticVariables.username);
+			AccountModels user = accountService.findOne(username);
+			if (user != null) {
+				CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
+				StaticVariables.customer = cus;
+				req.setAttribute("customer", cus);
+				
+				
+				CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
+				StaticVariables.cartID = cart1.getCartId();
+				StaticVariables.customerID = cus.getCustomerId();
+
+				req.setAttribute("accountID", user.getAccountID());
+				req.setAttribute("customerID", cus.getCustomerId());
+
+				req.setAttribute("cartID", cart1.getCartId());
+
+				int countCartItem = cartItemService.countCartItem(cart1.getCartId());
+				StaticVariables.countCartItem = countCartItem;
+				session.setAttribute("countCartItem", countCartItem);
+				req.setAttribute("countCartItem", (int) session.getAttribute("countCartItem"));
+			}
 			List<CustomerModels> listcustomer = cusService.findAll();
 			req.setAttribute("listcustomer", listcustomer);
 			RequestDispatcher rd = req.getRequestDispatcher("/views/user/inforuser_cart/inforuser.jsp");
@@ -68,26 +89,29 @@ public class UserHomeControllers extends HttpServlet {
 
 	private void getHome(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession();
-		req.setAttribute("username", username);
-		req.setAttribute("username", user.getUsername());
-
-		CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
-		StaticVariables.customer = cus;
-		req.setAttribute("customer", cus);
 		
-		
-		CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
-		StaticVariables.cartID = cart1.getCartId();
-		StaticVariables.customerID = cus.getCustomerId();
+		String username = StaticVariables.username;
+		AccountModels user = accountService.findOne(username);
+		if (user != null) {
+			CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
+			StaticVariables.customer = cus;
+			req.setAttribute("customer", cus);
+			
+			
+			CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
+			StaticVariables.cartID = cart1.getCartId();
+			StaticVariables.customerID = cus.getCustomerId();
 
-		req.setAttribute("accountID", user.getAccountID());
-		req.setAttribute("customerID", cus.getCustomerId());
+			req.setAttribute("accountID", user.getAccountID());
+			req.setAttribute("customerID", cus.getCustomerId());
 
-		req.setAttribute("cartID", cart1.getCartId());
+			req.setAttribute("cartID", cart1.getCartId());
 
-		int countCartItem = cartItemService.countCartItem((int) session.getAttribute("cartID"));
-		session.setAttribute("countCartItem", countCartItem);
-		req.setAttribute("countCartItem", (int) session.getAttribute("countCartItem"));
+			int countCartItem = cartItemService.countCartItem(cart1.getCartId());
+			StaticVariables.countCartItem = countCartItem;
+			session.setAttribute("countCartItem", countCartItem);
+			req.setAttribute("countCartItem", (int) session.getAttribute("countCartItem"));
+		}
 
 		List<ProductModels> listProduct = productService.findTopProduct(9);
 		List<ProductModels> listProductSale = productService.findTopSaleProduct(3);
@@ -97,6 +121,7 @@ public class UserHomeControllers extends HttpServlet {
 		req.setAttribute("listS", listProductSale);
 		req.setAttribute("listC", listCate);
 
+		req.setAttribute("username", StaticVariables.username);
 		req.getRequestDispatcher("/views/user/product/home.jsp").forward(req, resp);
 
 	}
@@ -114,8 +139,30 @@ public class UserHomeControllers extends HttpServlet {
 	private void editInfor(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		req.setCharacterEncoding("UTF-8");
 		resp.setCharacterEncoding("UTF-8");
+		HttpSession session = req.getSession();
+		String username = StaticVariables.username;
+		req.setAttribute("username", StaticVariables.username);
+		AccountModels user = accountService.findOne(username);
+		if (user != null) {
+			CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
+			StaticVariables.customer = cus;
+			req.setAttribute("customer", cus);
+			
+			
+			CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
+			StaticVariables.cartID = cart1.getCartId();
+			StaticVariables.customerID = cus.getCustomerId();
 
-		req.setAttribute("username", username);
+			req.setAttribute("accountID", user.getAccountID());
+			req.setAttribute("customerID", cus.getCustomerId());
+
+			req.setAttribute("cartID", cart1.getCartId());
+
+			int countCartItem = cartItemService.countCartItem(cart1.getCartId());
+			StaticVariables.countCartItem = countCartItem;
+			session.setAttribute("countCartItem", countCartItem);
+			req.setAttribute("countCartItem", (int) session.getAttribute("countCartItem"));
+		}
 		CustomerModels model = new CustomerModels();
 		try {
 			// lay du lieu tu jsp bang beanutils
@@ -136,11 +183,32 @@ public class UserHomeControllers extends HttpServlet {
 	private void postUpdateUser(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
 		req.setCharacterEncoding("UTF-8");
 		resp.setCharacterEncoding("UTF-8");
-
-		req.setAttribute("username", username);
 		HttpSession session = req.getSession();
+		String username = StaticVariables.username;
+		req.setAttribute("username", StaticVariables.username);
+		AccountModels user = accountService.findOne(username);
+		if (user != null) {
+			CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
+			StaticVariables.customer = cus;
+			req.setAttribute("customer", cus);
+			
+			
+			CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
+			StaticVariables.cartID = cart1.getCartId();
+			StaticVariables.customerID = cus.getCustomerId();
 
-		CustomerModels model = (CustomerModels) session.getAttribute("customer");
+			req.setAttribute("accountID", user.getAccountID());
+			req.setAttribute("customerID", cus.getCustomerId());
+
+			req.setAttribute("cartID", cart1.getCartId());
+
+			int countCartItem = cartItemService.countCartItem(cart1.getCartId());
+			StaticVariables.countCartItem = countCartItem;
+			session.setAttribute("countCartItem", countCartItem);
+			req.setAttribute("countCartItem", (int) session.getAttribute("countCartItem"));
+		}
+
+		CustomerModels model = StaticVariables.customer;
 		try {
 			// lay du lieu tu jsp bang beanutils
 			BeanUtils.populate(model, req.getParameterMap());
@@ -148,7 +216,8 @@ public class UserHomeControllers extends HttpServlet {
 			// model.setCategory(catService.findOne(model.getCategoryID()));
 			cusService.editInfor(model);
 			// thông báo kết quả
-			session.setAttribute("customer", model);
+			StaticVariables.customer = model;
+			req.setAttribute("customer", model);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

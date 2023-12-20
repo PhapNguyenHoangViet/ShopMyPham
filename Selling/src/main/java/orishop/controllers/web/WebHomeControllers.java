@@ -53,7 +53,6 @@ public class WebHomeControllers extends HttpServlet {
 		session.removeAttribute("account");
 		StaticVariables.account = null;
 		StaticVariables.username = null;
-		StaticVariables.cartID = 0;
 		
 		Cookie[] cookies = req.getCookies();
 
@@ -184,7 +183,6 @@ public class WebHomeControllers extends HttpServlet {
 				if (isRememberMe) {
 					saveRememberMe(resp, username);
 				}
-				StaticVariables.username = username;
 				req.setAttribute("username", username);
 
 				resp.sendRedirect(req.getContextPath() + "/web/waiting");
@@ -254,7 +252,7 @@ public class WebHomeControllers extends HttpServlet {
 					boolean isSuccess = accountService.register(username, password, email, code);
 
 					if (isSuccess) {
-						resp.sendRedirect(req.getContextPath() + "/web/VerifyCode?username="+username);
+						resp.sendRedirect(req.getContextPath() + "/web/VerifyCode");
 
 					} else {
 						alertMsg = "Lỗi hệ thống!";

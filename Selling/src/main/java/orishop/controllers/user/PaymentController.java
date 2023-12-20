@@ -37,6 +37,7 @@ import orishop.services.IProductService;
 import orishop.services.OrderServiceImpl;
 import orishop.services.ProductServiceImp;
 import orishop.util.Config;
+import orishop.util.StaticVariables;
 
 @WebServlet(urlPatterns = { "/user/pay","/paymentInfo", "/user/error","/user/thanks"})
 
@@ -103,11 +104,10 @@ public class PaymentController extends HttpServlet {
 		String orderType = "other";
 		String bankCode = "";
 		
-		HttpSession session = req.getSession();
 		int orderID = orderService.findLatestOrderId();
 		
 		String order_id = Integer.toString(orderID);
-		float totalPriceOrder = (float)session.getAttribute("totalPriceOrder");
+		float totalPriceOrder = StaticVariables.totalPriceOrder;
 		
 		
 		long amount = (long)totalPriceOrder*100; // Số tiền đơn hàng

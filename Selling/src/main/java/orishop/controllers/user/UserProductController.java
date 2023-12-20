@@ -19,9 +19,17 @@ import orishop.models.CustomerModels;
 import orishop.models.ProductModels;
 import orishop.models.RatingModels;
 import orishop.services.AccountServiceImpl;
+import orishop.services.CartItemServiceImpl;
+import orishop.services.CartServiceImpl;
 import orishop.services.CategoryServiceImp;
+import orishop.services.CustomerServiceImp;
+import orishop.services.EmployeeServiceImp;
 import orishop.services.IAccountService;
+import orishop.services.ICartItemService;
+import orishop.services.ICartService;
 import orishop.services.ICategoryService;
+import orishop.services.ICustomerService;
+import orishop.services.IEmployeeService;
 import orishop.services.IProductService;
 import orishop.services.IRatingService;
 import orishop.services.ProductServiceImp;
@@ -40,6 +48,13 @@ public class UserProductController extends HttpServlet {
 	IProductService productService = new ProductServiceImp();
 	ICategoryService categoryService = new CategoryServiceImp();
 	IAccountService accountService = new AccountServiceImpl();
+	
+	ICategoryService cateService = new CategoryServiceImp();
+	IEmployeeService empService = new EmployeeServiceImp();
+	ICustomerService cusService = new CustomerServiceImp();
+	ICartService cartService = new CartServiceImpl();
+	ICartItemService cartItemService = new CartItemServiceImpl();
+
 	
 	String username = StaticVariables.username;
 	AccountModels user = accountService.findOne(username);
@@ -97,7 +112,30 @@ public class UserProductController extends HttpServlet {
 	}
 
 	private void postSearchProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		req.setAttribute("username", username);
+		HttpSession session = req.getSession();
+		String username = StaticVariables.username;
+		req.setAttribute("username", StaticVariables.username);
+		AccountModels user = accountService.findOne(username);
+		if (user != null) {
+			CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
+			StaticVariables.customer = cus;
+			req.setAttribute("customer", cus);
+			
+			
+			CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
+			StaticVariables.cartID = cart1.getCartId();
+			StaticVariables.customerID = cus.getCustomerId();
+
+			req.setAttribute("accountID", user.getAccountID());
+			req.setAttribute("customerID", cus.getCustomerId());
+
+			req.setAttribute("cartID", cart1.getCartId());
+
+			int countCartItem = cartItemService.countCartItem(cart1.getCartId());
+			StaticVariables.countCartItem = countCartItem;
+			session.setAttribute("countCartItem", countCartItem);
+			req.setAttribute("countCartItem", (int) session.getAttribute("countCartItem"));
+		}
 		
 		
 		String proName = req.getParameter("searchProduct");
@@ -133,7 +171,30 @@ public class UserProductController extends HttpServlet {
 	}
 
 	private void getTopProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		req.setAttribute("username", username);
+		HttpSession session = req.getSession();
+		String username = StaticVariables.username;
+		req.setAttribute("username", StaticVariables.username);
+		AccountModels user = accountService.findOne(username);
+		if (user != null) {
+			CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
+			StaticVariables.customer = cus;
+			req.setAttribute("customer", cus);
+			
+			
+			CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
+			StaticVariables.cartID = cart1.getCartId();
+			StaticVariables.customerID = cus.getCustomerId();
+
+			req.setAttribute("accountID", user.getAccountID());
+			req.setAttribute("customerID", cus.getCustomerId());
+
+			req.setAttribute("cartID", cart1.getCartId());
+
+			int countCartItem = cartItemService.countCartItem(cart1.getCartId());
+			StaticVariables.countCartItem = countCartItem;
+			session.setAttribute("countCartItem", countCartItem);
+			req.setAttribute("countCartItem", (int) session.getAttribute("countCartItem"));
+		}
 		
 		List<ProductModels> listProduct = productService.findTopProduct(10);
 		int pagesize = 10;
@@ -167,7 +228,30 @@ public class UserProductController extends HttpServlet {
 	}
 
 	private void getFilterAsc(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		req.setAttribute("username", username);
+		HttpSession session = req.getSession();
+		String username = StaticVariables.username;
+		req.setAttribute("username", StaticVariables.username);
+		AccountModels user = accountService.findOne(username);
+		if (user != null) {
+			CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
+			StaticVariables.customer = cus;
+			req.setAttribute("customer", cus);
+			
+			
+			CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
+			StaticVariables.cartID = cart1.getCartId();
+			StaticVariables.customerID = cus.getCustomerId();
+
+			req.setAttribute("accountID", user.getAccountID());
+			req.setAttribute("customerID", cus.getCustomerId());
+
+			req.setAttribute("cartID", cart1.getCartId());
+
+			int countCartItem = cartItemService.countCartItem(cart1.getCartId());
+			StaticVariables.countCartItem = countCartItem;
+			session.setAttribute("countCartItem", countCartItem);
+			req.setAttribute("countCartItem", (int) session.getAttribute("countCartItem"));
+		}
 		
 		List<ProductModels> listProduct = productService.filterProductAscByPrice();
 		int pagesize = 10;
@@ -201,13 +285,35 @@ public class UserProductController extends HttpServlet {
 	}
 	
 	private void getDetailProduct(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		req.setAttribute("username", username);
+		HttpSession session = req.getSession();
+		String username = StaticVariables.username;
+		req.setAttribute("username", StaticVariables.username);
+		AccountModels user = accountService.findOne(username);
+		if (user != null) {
+			CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
+			StaticVariables.customer = cus;
+			req.setAttribute("customer", cus);
+			
+			
+			CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
+			StaticVariables.cartID = cart1.getCartId();
+			StaticVariables.customerID = cus.getCustomerId();
+
+			req.setAttribute("accountID", user.getAccountID());
+			req.setAttribute("customerID", cus.getCustomerId());
+
+			req.setAttribute("cartID", cart1.getCartId());
+
+			int countCartItem = cartItemService.countCartItem(cart1.getCartId());
+			StaticVariables.countCartItem = countCartItem;
+			session.setAttribute("countCartItem", countCartItem);
+			req.setAttribute("countCartItem", (int) session.getAttribute("countCartItem"));
+		}
 		
 		int pid = Integer.parseInt(req.getParameter("pid"));
 		ProductModels pro = productService.findOne(pid);
 		req.setAttribute("p", pro);
 		
-		HttpSession session = req.getSession();
 		session = req.getSession(true);
 		session.setAttribute("productID", pro.getProductId());
 		req.getRequestDispatcher("/views/user/product/detailproduct.jsp").forward(req, resp);
@@ -215,7 +321,30 @@ public class UserProductController extends HttpServlet {
 	
 
 	private void getProductByCategory(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		req.setAttribute("username", username);
+		HttpSession session = req.getSession();
+		String username = StaticVariables.username;
+		req.setAttribute("username", StaticVariables.username);
+		AccountModels user = accountService.findOne(username);
+		if (user != null) {
+			CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
+			StaticVariables.customer = cus;
+			req.setAttribute("customer", cus);
+			
+			
+			CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
+			StaticVariables.cartID = cart1.getCartId();
+			StaticVariables.customerID = cus.getCustomerId();
+
+			req.setAttribute("accountID", user.getAccountID());
+			req.setAttribute("customerID", cus.getCustomerId());
+
+			req.setAttribute("cartID", cart1.getCartId());
+
+			int countCartItem = cartItemService.countCartItem(cart1.getCartId());
+			StaticVariables.countCartItem = countCartItem;
+			session.setAttribute("countCartItem", countCartItem);
+			req.setAttribute("countCartItem", (int) session.getAttribute("countCartItem"));
+		}
 		
 		int id = Integer.parseInt(req.getParameter("cid"));
 		
@@ -252,7 +381,30 @@ public class UserProductController extends HttpServlet {
 	}
 
 	private void getFilterDesc(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-		req.setAttribute("username", username);
+		HttpSession session = req.getSession();
+		String username = StaticVariables.username;
+		req.setAttribute("username", StaticVariables.username);
+		AccountModels user = accountService.findOne(username);
+		if (user != null) {
+			CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
+			StaticVariables.customer = cus;
+			req.setAttribute("customer", cus);
+			
+			
+			CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
+			StaticVariables.cartID = cart1.getCartId();
+			StaticVariables.customerID = cus.getCustomerId();
+
+			req.setAttribute("accountID", user.getAccountID());
+			req.setAttribute("customerID", cus.getCustomerId());
+
+			req.setAttribute("cartID", cart1.getCartId());
+
+			int countCartItem = cartItemService.countCartItem(cart1.getCartId());
+			StaticVariables.countCartItem = countCartItem;
+			session.setAttribute("countCartItem", countCartItem);
+			req.setAttribute("countCartItem", (int) session.getAttribute("countCartItem"));
+		}
 		
 		List<ProductModels> listProduct = productService.filterProductDescByPrice();
 		int pagesize = 10;
@@ -293,7 +445,30 @@ public class UserProductController extends HttpServlet {
 //	}
 
 	private void getDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		req.setAttribute("username", username);
+		HttpSession session = req.getSession();
+		String username = StaticVariables.username;
+		req.setAttribute("username", StaticVariables.username);
+		AccountModels user = accountService.findOne(username);
+		if (user != null) {
+			CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
+			StaticVariables.customer = cus;
+			req.setAttribute("customer", cus);
+			
+			
+			CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
+			StaticVariables.cartID = cart1.getCartId();
+			StaticVariables.customerID = cus.getCustomerId();
+
+			req.setAttribute("accountID", user.getAccountID());
+			req.setAttribute("customerID", cus.getCustomerId());
+
+			req.setAttribute("cartID", cart1.getCartId());
+
+			int countCartItem = cartItemService.countCartItem(cart1.getCartId());
+			StaticVariables.countCartItem = countCartItem;
+			session.setAttribute("countCartItem", countCartItem);
+			req.setAttribute("countCartItem", (int) session.getAttribute("countCartItem"));
+		}
 		
 		int id = Integer.parseInt(req.getParameter("pid"));
 		ProductModels product = productService.findOne(id);
@@ -303,7 +478,30 @@ public class UserProductController extends HttpServlet {
 	}
 
 	private void doPost_Insert(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		req.setAttribute("username", username);
+		HttpSession session = req.getSession();
+		String username = StaticVariables.username;
+		req.setAttribute("username", StaticVariables.username);
+		AccountModels user = accountService.findOne(username);
+		if (user != null) {
+			CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
+			StaticVariables.customer = cus;
+			req.setAttribute("customer", cus);
+			
+			
+			CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
+			StaticVariables.cartID = cart1.getCartId();
+			StaticVariables.customerID = cus.getCustomerId();
+
+			req.setAttribute("accountID", user.getAccountID());
+			req.setAttribute("customerID", cus.getCustomerId());
+
+			req.setAttribute("cartID", cart1.getCartId());
+
+			int countCartItem = cartItemService.countCartItem(cart1.getCartId());
+			StaticVariables.countCartItem = countCartItem;
+			session.setAttribute("countCartItem", countCartItem);
+			req.setAttribute("countCartItem", (int) session.getAttribute("countCartItem"));
+		}
 		
 		ProductModels product = new ProductModels();
 
@@ -324,7 +522,30 @@ public class UserProductController extends HttpServlet {
 
 	private void doPost_Update(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		req.setAttribute("username", username);
+		HttpSession session = req.getSession();
+		String username = StaticVariables.username;
+		req.setAttribute("username", StaticVariables.username);
+		AccountModels user = accountService.findOne(username);
+		if (user != null) {
+			CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
+			StaticVariables.customer = cus;
+			req.setAttribute("customer", cus);
+			
+			
+			CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
+			StaticVariables.cartID = cart1.getCartId();
+			StaticVariables.customerID = cus.getCustomerId();
+
+			req.setAttribute("accountID", user.getAccountID());
+			req.setAttribute("customerID", cus.getCustomerId());
+
+			req.setAttribute("cartID", cart1.getCartId());
+
+			int countCartItem = cartItemService.countCartItem(cart1.getCartId());
+			StaticVariables.countCartItem = countCartItem;
+			session.setAttribute("countCartItem", countCartItem);
+			req.setAttribute("countCartItem", (int) session.getAttribute("countCartItem"));
+		}
 		
 		ProductModels product = new ProductModels();
 
@@ -345,7 +566,30 @@ public class UserProductController extends HttpServlet {
 
 	// Chưa check
 	private void getUpdate(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		req.setAttribute("username", username);
+		HttpSession session = req.getSession();
+		String username = StaticVariables.username;
+		req.setAttribute("username", StaticVariables.username);
+		AccountModels user = accountService.findOne(username);
+		if (user != null) {
+			CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
+			StaticVariables.customer = cus;
+			req.setAttribute("customer", cus);
+			
+			
+			CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
+			StaticVariables.cartID = cart1.getCartId();
+			StaticVariables.customerID = cus.getCustomerId();
+
+			req.setAttribute("accountID", user.getAccountID());
+			req.setAttribute("customerID", cus.getCustomerId());
+
+			req.setAttribute("cartID", cart1.getCartId());
+
+			int countCartItem = cartItemService.countCartItem(cart1.getCartId());
+			StaticVariables.countCartItem = countCartItem;
+			session.setAttribute("countCartItem", countCartItem);
+			req.setAttribute("countCartItem", (int) session.getAttribute("countCartItem"));
+		}
 		int id = Integer.parseInt(req.getParameter("pid"));
 		ProductModels product = productService.findOne(id);
 
@@ -358,7 +602,30 @@ public class UserProductController extends HttpServlet {
 
 	private void getListProduct(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		req.setAttribute("username", username);
+		HttpSession session = req.getSession();
+		String username = StaticVariables.username;
+		req.setAttribute("username", StaticVariables.username);
+		AccountModels user = accountService.findOne(username);
+		if (user != null) {
+			CustomerModels cus = cusService.findCustomerByAccountID(user.getAccountID());
+			StaticVariables.customer = cus;
+			req.setAttribute("customer", cus);
+			
+			
+			CartModels cart1 = cartService.findCartByCustomerID(cus.getCustomerId());
+			StaticVariables.cartID = cart1.getCartId();
+			StaticVariables.customerID = cus.getCustomerId();
+
+			req.setAttribute("accountID", user.getAccountID());
+			req.setAttribute("customerID", cus.getCustomerId());
+
+			req.setAttribute("cartID", cart1.getCartId());
+
+			int countCartItem = cartItemService.countCartItem(cart1.getCartId());
+			StaticVariables.countCartItem = countCartItem;
+			session.setAttribute("countCartItem", countCartItem);
+			req.setAttribute("countCartItem", (int) session.getAttribute("countCartItem"));
+		}
 		
 		List<ProductModels> listProduct = productService.findAllProduct();
 		int pagesize = 10;
